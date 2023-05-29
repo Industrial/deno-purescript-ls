@@ -1,4 +1,5 @@
 /.direnv
+/.psc-ide-port
 /.spago
 /dist
 /output

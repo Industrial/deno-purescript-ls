@@ -117,9 +117,9 @@ foreign import chownSync' :: Fn3 String Number Number Unit
 chownSync :: String -> Number -> Number -> Unit
 chownSync path uid gid = runFn3 chownSync' path uid gid
 
-foreign import readDir' :: String -> Promise (Array DirEntry)
+foreign import readDirInt :: String -> Promise (Array DirEntry)
 readDir :: String -> Aff (Array DirEntry)
-readDir = toAff <<< readDir'
+readDir = toAff <<< readDirInt
 
 foreign import stat' :: String -> Promise (FileInfo)
 

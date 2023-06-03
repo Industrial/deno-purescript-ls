@@ -1,8 +1,4 @@
-export const chmod$prime = (path) => {
-  return async (mode) => {
-    return await Deno.chmod(path, mode)
-  }
-}
+export const chmod$prime = Deno.chmod
 
 export const chmodSync$prime = (path) => {
   return (mode) => {

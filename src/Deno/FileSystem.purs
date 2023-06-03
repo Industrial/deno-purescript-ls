@@ -4,6 +4,7 @@ import Prelude
 
 import Control.Promise (Promise, toAff)
 import Data.Date (Date)
+import Data.Function.Uncurried (Fn2, runFn2)
 import Data.Maybe (Maybe)
 import Deno.WebAPI (AbortSignal)
 import Effect.Aff (Aff)
@@ -100,9 +101,9 @@ class URLOrString a
 instance URLOrString URL
 instance URLOrString String
 
-foreign import chmod' :: Foreign -> Number -> Promise Unit
+foreign import chmod' :: Fn2 Foreign Number (Promise Unit)
 chmod :: forall a. URLOrString a => a -> Number -> Aff Unit
-chmod o = toAff <<< chmod' (unsafeToForeign o)
+chmod path = toAff <<< runFn2 chmod' (unsafeToForeign path)
 
 foreign import chmodSync' :: String -> Number -> Unit
 chmodSync :: String -> Number -> Unit

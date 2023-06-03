@@ -1,7 +1,6 @@
-module Deno
-  (
-    args
-  ) where
+module Deno ( 
+  args
+) where
 
 import Effect (Effect)
 

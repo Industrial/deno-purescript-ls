@@ -12,7 +12,18 @@ to generate this file without the comments in this block.
 -}
 { name = "my-project"
 , dependencies =
-  [ "arrays", "console", "effect", "lists", "prelude", "psci-support" ]
+  [ "aff"
+  , "aff-promise"
+  , "arrays"
+  , "console"
+  , "datetime"
+  , "effect"
+  , "foldable-traversable"
+  , "foreign"
+  , "maybe"
+  , "prelude"
+  , "web-url"
+  ]
 , packages = ./packages.dhall
 , sources = [ "src/**/*.purs", "test/**/*.purs" ]
 }

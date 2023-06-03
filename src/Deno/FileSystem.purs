@@ -4,7 +4,7 @@ import Prelude
 
 import Control.Promise (Promise, toAff)
 import Data.Date (Date)
-import Data.Function.Uncurried (Fn2, runFn2)
+import Data.Function.Uncurried (Fn2, Fn3, runFn2, runFn3)
 import Data.Maybe (Maybe)
 import Deno.WebAPI (AbortSignal)
 import Effect.Aff (Aff)
@@ -105,20 +105,19 @@ foreign import chmod' :: Fn2 Foreign Number (Promise Unit)
 chmod :: forall a. URLOrString a => a -> Number -> Aff Unit
 chmod path = toAff <<< runFn2 chmod' (unsafeToForeign path)
 
-foreign import chmodSync' :: String -> Number -> Unit
+foreign import chmodSync' :: Fn2 String Number Unit
 chmodSync :: String -> Number -> Unit
-chmodSync path mode = chmodSync' path mode
+chmodSync path mode = runFn2 chmodSync' path mode
 
-foreign import chown' :: String -> Number -> Number -> Promise Unit
+foreign import chown' :: Fn3 String Number Number (Promise Unit)
 chown :: String -> Number -> Number -> Aff Unit
-chown path uid = toAff <<< (chown' path uid)
+chown path uid = toAff <<< runFn3 chown' path uid
 
-foreign import chownSync' :: String -> Number -> Number -> Unit
+foreign import chownSync' :: Fn3 String Number Number Unit
 chownSync :: String -> Number -> Number -> Unit
-chownSync path uid gid = chownSync' path uid gid
+chownSync path uid gid = runFn3 chownSync' path uid gid
 
 foreign import readDir' :: String -> Promise (Array DirEntry)
-
 readDir :: String -> Aff (Array DirEntry)
 readDir = toAff <<< readDir'
 

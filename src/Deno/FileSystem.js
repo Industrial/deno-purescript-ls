@@ -1,26 +1,7 @@
 export const chmod$prime = Deno.chmod
-
-export const chmodSync$prime = (path) => {
-  return (mode) => {
-    return Deno.chmodSync(path, mode)
-  }
-}
-
-export const chown$prime = (path) => {
-  return (uid) => {
-    return async (gid) => {
-      return await Deno.chown(path, uid, gid)
-    }
-  }
-}
-
-export const chownSync$prime = (path) => {
-  return (uid) => {
-    return (gid) => {
-      return Deno.chownSync(path, uid, gid)
-    }
-  }
-}
+export const chmodSync$prime = Deno.chmodSync
+export const chown$prime = Deno.chown
+export const chownSync$prime = Deno.chownSync
 
 export const readDir$prime = async (path) => {
   const entries = Deno.readDir(path)

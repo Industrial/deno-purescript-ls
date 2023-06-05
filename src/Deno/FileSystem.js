@@ -3,6 +3,7 @@ export const chmodSync$prime = Deno.chmodSync
 export const chown$prime = Deno.chown
 export const chownSync$prime = Deno.chownSync
 
+// TODO: Fix the bug where this can't be represented with $prime.
 export const readDirInt = async (path) => {
   const entries = Deno.readDir(path)
 
@@ -15,6 +16,5 @@ export const readDirInt = async (path) => {
   return output
 }
 
-export const stat$prime = async (path) => {
-  return Deno.stat(path)
-}
+// TODO: Fix the bug where this can't be represented with $prime.
+export const statString = Deno.stat

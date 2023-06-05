@@ -2,14 +2,18 @@ module Main where
 
 import Prelude
 
-import Data.Array (sortBy)
-import Data.Foldable (for_)
+import Cliffy (table)
+import Data.Array (filter, concat)
+import Data.Maybe (Maybe(..))
+import Data.Traversable (traverse)
 import Deno (args)
-import Deno.FileSystem (DirEntry, readDir)
+import Deno.FileSystem (DirEntry, readDir, stat)
 import Effect (Effect)
-import Effect.Aff (launchAff_)
+import Effect.Aff (Aff, launchAff_)
 import Effect.Class (liftEffect)
 import Effect.Console (log)
+import Format (formatPermissions)
+import Permissions (getPermissions)
 
 getDirectory :: Effect String
 getDirectory = do
@@ -19,16 +23,45 @@ getDirectory = do
     [arg] -> pure arg
     _     -> pure "."
 
-compareDirectory :: DirEntry -> DirEntry -> Ordering
-compareDirectory a b = compare a.isDirectory b.isDirectory
+filePath :: String -> String -> String
+filePath directory name = directory <> "/" <> name
 
-compareName :: DirEntry -> DirEntry -> Ordering
-compareName a b = compare a.name b.name
+formatEntryName :: DirEntry -> String
+formatEntryName entry = case entry.isDirectory of
+  true -> entry.name <> "/"
+  _    -> entry.name
+
+formatEntry :: String -> DirEntry -> Aff (Array String)
+formatEntry directory entry = do
+  let entryPath = filePath directory entry.name
+  entryStat <- stat entryPath
+  entryPermissions <- case getPermissions entryStat of
+    Just perms -> pure perms
+    Nothing -> pure [[false, false, false], [false, false, false], [false, false, false]]
+
+  let name = formatEntryName entry
+  let mode = formatPermissions entryPermissions
+      size = show entryStat.size
+      user = (show entryStat.gid) <> "/" <> (show entryStat.uid)
+
+  pure [
+    name,
+    mode,
+    size,
+    user
+  ]
 
 main :: Effect Unit
 main = launchAff_ do
   directory <- liftEffect getDirectory
   entries <- readDir directory
-  let sortedEntries = sortBy compareName $ sortBy compareDirectory entries
-  for_ sortedEntries \entry -> do
-    liftEffect $ log entry.name
+
+  let directories = filter (\entry -> entry.isDirectory) entries
+  let files = filter (\entry -> not entry.isDirectory) entries
+
+  directoryStats <- traverse (formatEntry directory) directories
+  fileStats <- traverse (formatEntry directory) files
+
+  let entryTable = table 1 0 false (concat [directoryStats, fileStats])
+
+  liftEffect $ log entryTable

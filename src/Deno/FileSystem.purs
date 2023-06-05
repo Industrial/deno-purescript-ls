@@ -23,22 +23,22 @@ type FileInfo = {
   isDirectory :: Boolean,
   isSymlink :: Boolean,
   size :: Int,
-  mtime :: Maybe Date,
-  atime :: Maybe Date,
-  birthtime :: Maybe Date,
+  mtime :: Date,
+  atime :: Date,
+  birthtime :: Date,
   dev :: Int,
   ino :: Int,
   mode :: Int,
-  nlink :: Maybe Int,
-  uid :: Maybe Int,
-  gid :: Maybe Int,
-  rdev :: Maybe Int,
-  blcksize :: Maybe Int,
-  blocks :: Maybe Int,
-  isBlockDevice :: Maybe Boolean,
-  isCharDevice :: Maybe Boolean,
-  isFifo :: Maybe Boolean,
-  isSocket :: Maybe Boolean
+  nlink :: Int,
+  uid :: Int,
+  gid :: Int,
+  rdev :: Int,
+  blcksize :: Int,
+  blocks :: Int,
+  isBlockDevice :: Boolean,
+  isCharDevice :: Boolean,
+  isFifo :: Boolean,
+  isSocket :: Boolean
 }
 
 type FsEvent = {
@@ -121,7 +121,6 @@ foreign import readDirInt :: String -> Promise (Array DirEntry)
 readDir :: String -> Aff (Array DirEntry)
 readDir = toAff <<< readDirInt
 
-foreign import stat' :: String -> Promise (FileInfo)
-
+foreign import statString :: String -> Promise (FileInfo)
 stat :: String -> Aff (FileInfo)
-stat = toAff <<< stat'
+stat = toAff <<< statString

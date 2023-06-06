@@ -3,8 +3,9 @@ module Main where
 import Prelude
 
 import Cliffy (table)
-import Data.Array (filter, concat)
-import Data.Maybe (Maybe(..))
+import Data.Array (concat, filter, (!!), sort)
+import Data.Maybe (Maybe(..), fromMaybe)
+import Data.String (Pattern(..), split)
 import Data.Traversable (traverse)
 import Deno (args)
 import Deno.FileSystem (DirEntry, readDir, stat)
@@ -12,7 +13,7 @@ import Effect (Effect)
 import Effect.Aff (Aff, launchAff_)
 import Effect.Class (liftEffect)
 import Effect.Console (log)
-import Format (formatPermissions)
+import Format (formatPermissions, formatSize)
 import Permissions (getPermissions)
 
 getDirectory :: Effect String
@@ -41,13 +42,17 @@ formatEntry directory entry = do
 
   let name = formatEntryName entry
   let mode = formatPermissions entryPermissions
-      size = show entryStat.size
+      size = split (Pattern " ") $ formatSize entryStat.size
       user = (show entryStat.gid) <> "/" <> (show entryStat.uid)
+
+  let sizeAmount = fromMaybe "N/A" $ size !! 0
+  let sizeMeasure = fromMaybe "N/A" $ size !! 1
 
   pure [
     name,
     mode,
-    size,
+    sizeAmount,
+    sizeMeasure,
     user
   ]
 
@@ -62,6 +67,6 @@ main = launchAff_ do
   directoryStats <- traverse (formatEntry directory) directories
   fileStats <- traverse (formatEntry directory) files
 
-  let entryTable = table 1 0 false (concat [directoryStats, fileStats])
+  let entryTable = table 1 0 false (concat [sort directoryStats, sort fileStats])
 
   liftEffect $ log entryTable

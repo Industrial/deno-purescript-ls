@@ -18,16 +18,13 @@ to generate this file without the comments in this block.
   , "console"
   , "datetime"
   , "effect"
-  , "enums"
   , "foldable-traversable"
   , "foreign"
   , "functions"
   , "integers"
   , "maybe"
-  , "numbers"
   , "prelude"
   , "strings"
-  , "tuples"
   , "web-url"
   ]
 , packages = ./packages.dhall
